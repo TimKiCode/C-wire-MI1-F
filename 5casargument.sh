@@ -2,11 +2,15 @@
 
 function hvbcomp {
 	echo "tout roule"
-	awk '{print $1, $2}' "$fichier"
+	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
+	awk -F';' -v n=1 '{ if($n !~ /-/ && $(($n+1)) ~ /-/ ) print $n, $(NF-1), $NF }' t.csv
+
 }
 
 function hvacomp {
 	echo "tout roule"
+	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
+	awk -F';' -v a=2 '{ if($a !~ /-/ && $(($a+1)) !~ /-/) print $a, $(NF-1), $NF }' t.csv
 }
 
 function lvall {
@@ -34,4 +38,3 @@ case "$combined" in
 "lv-indiv") lvindiv;;
 *) echo "rtfm";;
 esac
-
