@@ -3,7 +3,7 @@
 function hvbcomp {
 	echo "tout roule"
 	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' -v n=1 '{ if($n !~ /-/ && $(($n+1)) ~ /-/ ) print $n, $(NF-1), $NF }' t.csv
+	awk -F';' '{ if($1 !~ /-/ && $2 ~ /-/ ) print $1, $(NF-1), $NF }' t.csv
 
 }
 
