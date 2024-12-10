@@ -31,16 +31,13 @@ Station* recherche(Station *st, int id){
     //printf("cette station n'existe pas\n");
     return NULL;
   }
-  if(id<st->Id){
-    recherche(st->fg,id);
-  }
-  else if(id>st->Id){
-    recherche(st->fd, id);
-  }
   else if(id==st->Id){
     return st;
   }
-  return 0;
+  else if(id<st->Id){
+    recherche(st->fg,id);
+  }
+  recherche(st->fd, id);
 }
 
 int min(int a,int b){
@@ -203,6 +200,7 @@ Station* recupDonnee(int *h){
   while(fscanf(fichier,"%d %d %d",&id, &capacite,&conso)==3){
     if(recherche(a,id)==NULL){
       a=insertionStation(a, id, capacite,conso, h);
+      equilibrerStation(a);
     }
     else{
       ajoutConso(a, id, conso);
@@ -233,3 +231,4 @@ int main(){
   printf("la somme totale des consommations est : %d\n",sommetot(a));
   return 0;
 }
+
