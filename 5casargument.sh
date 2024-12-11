@@ -2,7 +2,7 @@
 
 function hvbcomp {
 	echo "tout roule"
-	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
+	tail -n +2 "$fichier"  | cut -d ';' -f 2-> t.csv
 	awk -F';' '{ if($1 !~ /-/ && $2 ~ /-/ ) print $1, $(NF-1), $NF }' t.csv > tmp.csv
 
 }
@@ -10,8 +10,9 @@ function hvbcomp {
 function hvacomp {
 	echo "tout roule"
 	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' -v a=2 '{ if($a !~ /-/ && $(($a+1)) !~ /-/) print $a, $(NF-1), $NF }' t.csv > tmp.csv
+	awk -F';' '{ if($2 !~ /-/ && $3 ~ /-/) print $2, $(NF-1), $NF }' t.csv > tmp.csv
 }
+
 
 function lvall {
 	echo "tout roule"
@@ -27,7 +28,10 @@ function lvcomp {
 
 function lvindiv {
 	echo "tout roule"
+	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
+	awk -F';' '{ if($3 !~ /-/ && $4 ~ /-/) print $3, $(NF-1), $NF }' t.csv
 }
+
 
 function lvallminmax {
 	echo "tout roule"
