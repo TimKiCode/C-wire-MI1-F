@@ -6,6 +6,7 @@ typedef struct Station{
   int Id;
   int capacite;
   int consommation;
+  int diff;
   int eq;
   struct Station* fg;
   struct Station* fd;
@@ -20,6 +21,7 @@ Station* creerStation(int id, int cap, int conso){
   s->Id=id;
   s->capacite=cap;
   s->consommation=conso;
+  s->diff=s->capacite-s->consommation;
   s->eq=0;
   s->fg=NULL;
   s->fd=NULL;
@@ -75,11 +77,12 @@ int min3(int a,int b,int c){
 
 Station* rotationGauche(Station* st){
   Station* pivot = st->fd; 
-  int eq_st = st->eq, eq_p = pivot->eq;
+  int eq_st, eq_p;
 
   st->fd = pivot->fg; 
   pivot->fg = st;     
-
+  eq_st=st->eq;
+  eq_p = pivot->eq;
   st->eq = eq_st - max(eq_p, 0) - 1;
   pivot->eq = min3(eq_st - 2, eq_st + eq_p - 2, eq_p - 1);
 
@@ -87,11 +90,12 @@ Station* rotationGauche(Station* st){
 }
 Station* rotationDroite(Station* st){
   Station* pivot = st->fg; 
-  int eq_st = st->eq, eq_p = pivot->eq;
+  int eq_st, eq_p;
 
   st->fg = pivot->fd; 
   pivot->fd = st;     
-
+  eq_st = st->eq;
+  eq_p = pivot->eq;
 
   st->eq = eq_st - min(eq_p, 0) + 1;
   pivot->eq = max3(eq_st + 2, eq_st + eq_p + 2, eq_p + 1);
@@ -137,27 +141,27 @@ Station* insertionStation(Station * a, int id,int cap,int conso, int *h)
         a=creerStation(id,cap,conso);
         return a;
     }
-    else if (id < a->Id)
-    { // Si l'élément est plus petit, insérer à gauche
+    else if (id < a->Id){ 
         a->fg = insertionStation(a->fg, id,cap,conso, h);
-        *h = -*h; // Inverse l'impact de la hauteur
+        *h = -*h;
     }
-    else if (id > a->Id)
-    { // Si l'élément est plus grand, insérer à droite
+    else if (id > a->Id) { 
         a->fd = insertionStation(a->fd, id,cap,conso, h);
     }
-    else
-    { // Élément déjà présent
+    else{ 
         *h = 0;
         return a;
     }
 
-    // Mise à jour du facteur d'équilibre et rééquilibrage si nécessaire
-    if (*h != 0)
-    {
+    if (*h != 0){
         a->eq += *h;
-        a = equilibrerStation(a);
-        *h = (a->eq == 0) ? 0 : 1; // Mise à jour de la hauteur
+        a=equilibrerStation(a);
+        if(a->eq==0){
+           *h=0;
+        }
+        else{
+           *h=1;
+        }
     }
     return a;
 }
@@ -174,6 +178,7 @@ int sommetot(Station*a){ //calcule la somme des consommations totales
 void ajoutConso(Station*a,int id,int conso){
   if(id==a->Id){
     a->consommation+=conso;
+    a->diff=a->capacite-a->consommation;
   }
   else if(id<a->Id){
     ajoutConso(a->fg, id, conso);
@@ -200,21 +205,57 @@ Station* recupDonnee(int *h){
   while(fscanf(fichier,"%d %d %d",&id, &capacite,&conso)==3){
     if(recherche(a,id)==NULL){
       a=insertionStation(a, id, capacite,conso, h);
-      equilibrerStation(a);
+      a=equilibrerStation(a);
     }
     else{
       ajoutConso(a, id, conso);
-    
-    printf("%d %d %d\n",id,capacite,conso);
     }
   }
   return a;
   fclose(fichier);
 }
 
+void ecrireStation(Station*st){
+  char* f = malloc(sizeof(char) * 50);
+  printf("nom de la station: ");
+  char nom[100];
+  scanf("%25s",nom);
+  sprintf(f, "%s.txt", nom);
+  FILE* fichier = NULL;
+  //Ouverture du fichier en mode ajout
+  fichier = fopen(f, "a");
+  if (fichier == NULL) {
+    printf("Ouverture du fichier impossible\n");
+    printf("code d'erreur = %d \n", errno );
+    exit(1);
+
+  }
+  else{
+    //Fermeture du fichier
+    fclose(fichier);
+    //Ouverture du fichier en mode écriture
+    fichier = fopen(f, "w");
+    if (fichier == NULL) {
+      printf("Ouverture du fichier impossible\n");
+      printf("code d'erreur = %d \n", errno );
+
+    }
+    else{
+      if(st!=NULL){
+      	fprintf(fichier,"%d %d %d %d\n",st->Id,st->capacite,st->consommation,st->diff);
+      	/*ecrireStation(st->fg);
+      	ecrireStation(st->fd);*/
+      }
+    }
+   }
+   free(f);
+   fclose(fichier);
+}
+
+
 void afficheStationPrefixe(Station*a){
   if(a!=NULL){
-    printf("%d %d %d\n",a->Id,a->capacite,a->consommation);
+    printf("%d %d %d %d\n",a->Id,a->capacite,a->consommation,a->diff);
     afficheStationPrefixe(a->fg);
     afficheStationPrefixe(a->fd);
   }
@@ -222,13 +263,21 @@ void afficheStationPrefixe(Station*a){
 
 int main(){
   Station*a=malloc(sizeof(Station));
-  a=creerStation(5,10,0);
+
   int*h=malloc(sizeof(int));
   *h=1;
   
   a=recupDonnee(h);
   afficheStationPrefixe(a);
   printf("la somme totale des consommations est : %d\n",sommetot(a));
+  ecrireStation(a);
+  /*a=insertionStation(a,11,5,2,h);
+  a=insertionStation(a,16,5,21,h);
+  a=insertionStation(a,18,15,256,h);
+  a=insertionStation(a,11,5,2,h);
+  a=insertionStation(a,20,45,23,h);
+  afficheStationPrefixe(a);*/
+  free(h);
+  free(a);
   return 0;
 }
-
