@@ -3,6 +3,7 @@
 # Nom du dossier à vérifier (chemin relatif)
 tmp="tmp"
 graphs="graphs"
+exec="exec.c"
 
 # Vérification
 if [ -d "$tmp" ]; then
@@ -10,7 +11,6 @@ if [ -d "$tmp" ]; then
 	if [ -n "$(ls -A "$tmp")" ]; then
 		echo "Le dossier '$tmp' n'est pas vide. Je supprime son contenu."
 		rm -rf "$tmp"/*
-		rm -rf "$tmp"/.* 2>/dev/null
 	else
 		echo "Le dossier '$tmp' est déjà vide."
 	fi
@@ -24,5 +24,12 @@ if [ -d "$graphs" ]; then
 else
 	echo "Le dossier '$graphs' n'existe pas. Donc je vais le créer."
 	mkdir "$graphs"
+    
+fi
+
+if [ -d "$exec" ]; then
+	echo "Le dossier '$exec' existe."
+else
+	echo "Erreur sur l'excutable .c '$exec' n'existe pas."
     
 fi
