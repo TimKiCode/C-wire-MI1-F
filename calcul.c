@@ -203,7 +203,7 @@ Station* recupDonnee(int *h){
   Station*a=malloc(sizeof(Station));
   int id, capacite,conso;
   while(fscanf(fichier,"%d %d %d",&id, &capacite,&conso)==3){
-    if(recherche(a,id)==NULL){
+    if(recherche(a,id)==NULL && id!=0 && capacite!=0 && conso!=0){
       a=insertionStation(a, id, capacite,conso, h);
       a=equilibrerStation(a);
     }
@@ -215,42 +215,44 @@ Station* recupDonnee(int *h){
   fclose(fichier);
 }
 
-void ecrireStation(Station*st){
-  char* f = malloc(sizeof(char) * 50);
-  printf("nom de la station: ");
-  char nom[100];
-  scanf("%25s",nom);
-  sprintf(f, "%s.txt", nom);
-  FILE* fichier = NULL;
-  //Ouverture du fichier en mode ajout
-  fichier = fopen(f, "a");
-  if (fichier == NULL) {
-    printf("Ouverture du fichier impossible\n");
-    printf("code d'erreur = %d \n", errno );
-    exit(1);
-
-  }
-  else{
-    //Fermeture du fichier
-    fclose(fichier);
-    //Ouverture du fichier en mode écriture
-    fichier = fopen(f, "w");
-    if (fichier == NULL) {
-      printf("Ouverture du fichier impossible\n");
-      printf("code d'erreur = %d \n", errno );
-
+void ecrireStationRecursif(FILE* fichier, Station* a) {
+    if (a == NULL) {
+        return;
     }
-    else{
-      if(st!=NULL){
-      	fprintf(fichier,"%d %d %d %d\n",st->Id,st->capacite,st->consommation,st->diff);
-      	/*ecrireStation(st->fg);
-      	ecrireStation(st->fd);*/
-      }
+    fprintf(fichier, "%d %d %d %d\n", a->Id,a->capacite,a->consommation,a->diff);
+    
+    if (a->fg != NULL) {
+        ecrireStationRecursif(fichier, a->fg);
     }
-   }
-   free(f);
-   fclose(fichier);
+    
+    if (a->fd != NULL) {
+        ecrireStationRecursif(fichier, a->fd);
+    }
 }
+
+
+void ecrireStationDansFichier(Station* a) {
+    if (a == NULL) {
+        fprintf(stderr, "Erreur : La station est NULL.\n");
+        return;
+    }
+    char nom[100];
+    printf("quelle fichier: ");
+    scanf("%50s",nom);
+   
+    FILE* fichier = fopen(nom, "w");
+    if (fichier == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return;
+    }
+
+    ecrireStationRecursif(fichier, a);
+
+    
+    fclose(fichier);
+    printf("Les données de la station et de ses sous-arbres ont été écrites dans le fichier '%s'.\n", nom);
+}
+
 
 
 void afficheStationPrefixe(Station*a){
@@ -268,15 +270,10 @@ int main(){
   *h=1;
   
   a=recupDonnee(h);
-  afficheStationPrefixe(a);
+  
   printf("la somme totale des consommations est : %d\n",sommetot(a));
-  ecrireStation(a);
-  /*a=insertionStation(a,11,5,2,h);
-  a=insertionStation(a,16,5,21,h);
-  a=insertionStation(a,18,15,256,h);
-  a=insertionStation(a,11,5,2,h);
-  a=insertionStation(a,20,45,23,h);
-  afficheStationPrefixe(a);*/
+  ecrireStationDansFichier(a);
+  
   free(h);
   free(a);
   return 0;
