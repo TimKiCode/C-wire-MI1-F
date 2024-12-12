@@ -4,15 +4,15 @@
 
 typedef struct Station{
   int Id;
-  int capacite;
-  int consommation;
-  int diff;
+  long capacite;
+  long consommation;
+  long diff;
   int eq;
   struct Station* fg;
   struct Station* fd;
 }Station;
 
-Station* creerStation(int id, int cap, int conso){
+Station* creerStation(int id, long cap, long conso){
   Station* s=malloc(sizeof(Station));
   if(s==NULL){
     printf("probleme d'allocation");
@@ -40,6 +40,14 @@ Station* recherche(Station *st, int id){
     return recherche(st->fg,id);
   }
   return recherche(st->fd, id);
+}
+
+void libererStation(Station* a) {
+    if (a != NULL) {
+        libererStation(a->fg);
+        libererStation(a->fd);
+        free(a);
+    }
 }
 
 int min(int a,int b){
@@ -133,7 +141,7 @@ Station* equilibrerStation(Station* a){
   return a;
 }
 
-Station* insertionStation(Station * a, int id,int cap,int conso, int *h)
+Station* insertionStation(Station * a, int id,long cap,long conso, int *h)
 {
     if (a == NULL)
     {           // Si l'arbre est vide, crée un nouveau nœud
@@ -168,51 +176,57 @@ Station* insertionStation(Station * a, int id,int cap,int conso, int *h)
 
 
 
-int sommetot(Station*a){ //calcule la somme des consommations totales
- if(a==NULL){
-  return 0;
- }
- return a->consommation+sommetot(a->fg)+sommetot(a->fd);
-}
-
-void ajoutConso(Station*a,int id,int conso){
-  if(id==a->Id){
-    a->consommation+=conso;
-    a->diff=a->capacite-a->consommation;
-  }
-  else if(id<a->Id){
-    ajoutConso(a->fg, id, conso);
-  }
-  else{
-    ajoutConso(a->fd, id, conso);
-  }
-}
-
-
-Station* recupDonnee(int *h,char*n){
-  char*nom=malloc(sizeof(char)*50);
-  sprintf(nom,"%s.txt",n);
-  FILE*fichier=fopen(nom,"r+");
-  if(fichier==NULL){
-    printf("Ouverture du fichier impossible\n");
-    printf("code d'erreur = %d \n", errno );
-    exit(1);
-  }
-  ;
-  Station*a=malloc(sizeof(Station));
-  int id, capacite,conso;
-  while(fscanf(fichier,"%d %d %d",&id, &capacite,&conso)==3){
-    if(recherche(a,id)==NULL){
-      a=insertionStation(a, id, capacite,conso, h);
-      a=equilibrerStation(a);
+int sommetot(Station *a) { // Calcule la somme des consommations totales
+    if (a == NULL) {
+        return 0;
     }
-    else{
-      ajoutConso(a, id, conso);
-    }
-  }
-  return a;
-  fclose(fichier);
+    // Debug pour vérifier la consommation de chaque station
+    printf("Station %d, consommation %ld\n", a->Id, a->consommation);
+    return a->consommation + sommetot(a->fg) + sommetot(a->fd);
 }
+
+void ajoutConso(Station *a, int id, long conso) {
+    if (a == NULL) return;
+    if (id == a->Id) {
+        a->consommation += conso; // Ajouter la consommation
+        a->diff = a->capacite - a->consommation; // Recalculer la différence
+    } else if (id < a->Id) {
+        ajoutConso(a->fg, id, conso);
+    } else {
+        ajoutConso(a->fd, id, conso);
+    }
+}
+
+
+Station* recupDonnee(Station *a, int *h, char *nom) {
+    char filepath[100];
+    snprintf(filepath, sizeof(filepath), "%s.txt", nom); // Construction du chemin du fichier
+    FILE *fichier = fopen(filepath, "r+"); 
+    if (fichier == NULL) {
+        printf("Ouverture du fichier impossible\n");
+        printf("Code d'erreur = %d\n", errno);
+        exit(1);
+    }
+    int id;
+    long capacite;
+    long conso;
+
+    // Lecture ligne par ligne du fichier
+    while (fscanf(fichier, "%d %ld %ld", &id, &capacite, &conso) == 3) {
+        printf("Ligne lue : id=%d, capacite=%ld, conso=%ld\n", id, capacite, conso); // Debug
+        if (id != 0 && capacite != 0) {
+                a = insertionStation(a, id, capacite, conso, h);
+                }
+            else {
+                ajoutConso(a, id, conso);
+            }
+
+    }
+
+    fclose(fichier); // Toujours fermer le fichier après la lecture
+    return a;        // Retourner l'arbre construit (peut être NULL si aucune station n'a été insérée)
+}
+
 
 void ecrireStationRecursif(FILE* fichier, Station* a) {
     if(fichier==NULL){
@@ -223,7 +237,7 @@ void ecrireStationRecursif(FILE* fichier, Station* a) {
     if (a == NULL) {
         return;
     }
-    fprintf(fichier, "%d %d %d %d\n", a->Id,a->capacite,a->consommation,a->diff);
+    fprintf(fichier, "%d %ld %ld %ld\n", a->Id,a->capacite,a->consommation,a->diff);
     
     if (a->fg != NULL) {
         ecrireStationRecursif(fichier, a->fg);
@@ -238,7 +252,7 @@ void ecrireStationRecursif(FILE* fichier, Station* a) {
 void ecrireStationDansFichier(Station* a,char*n) {
     if (a == NULL) {
         fprintf(stderr, "Erreur : La station est NULL.\n");
-        return NULL;
+        return;
     }
     char*nom=malloc(sizeof(char)*50);
     if(nom==NULL){
@@ -256,36 +270,49 @@ void ecrireStationDansFichier(Station* a,char*n) {
     
     fclose(fichier);
     printf("Les données de la station et de ses sous-arbres ont été écrites dans le fichier '%s'.\n", nom);
-  
 }
 
 
 
 void afficheStationPrefixe(Station*a){
   if(a!=NULL){
-    printf("%d %d %d %d\n",a->Id,a->capacite,a->consommation,a->diff);
+    printf("%d %ld %ld %ld\n",a->Id,a->capacite,a->consommation,a->diff);
     afficheStationPrefixe(a->fg);
     afficheStationPrefixe(a->fd);
   }
 }
 
-int main(){
-  Station*a=malloc(sizeof(Station));
+int main() {
+    Station *a = NULL; // Initialisation de l'arbre à NULL
+    int *h = malloc(sizeof(int));
+    if (h == NULL) {
+        fprintf(stderr, "Erreur : Allocation mémoire échouée\n");
+        exit(1);
+    }
+    *h = 1;
 
-  int*h=malloc(sizeof(int));
-  *h=1;
-  char*nom=malloc(sizeof(char)*50);
-  printf("entrer le nom de la station: ");
-  scanf("%25s",nom);
-  
-  a=recupDonnee(h,nom);
-  
-  printf("la somme totale des consommations est : %d\n",sommetot(a));
-  
-  ecrireStationDansFichier(a,nom);
-  
-  free(h);
-  free(a);
-  return 0;
+    char *nom = malloc(sizeof(char) * 50);
+    if (nom == NULL) {
+        fprintf(stderr, "Erreur : Allocation mémoire échouée\n");
+        exit(1);
+    }
+    printf("Entrer le nom de la station : ");
+    scanf("%25s", nom);
+
+    a = recupDonnee(a, h, nom); // Charger les données
+    if (a == NULL) {
+        fprintf(stderr, "Erreur : Aucun arbre n'a été créé, vérifiez vos données d'entrée.\n");
+        free(h);
+        free(nom);
+        return 1; // Sortir avec un code d'erreur
+    }
+
+    printf("La somme totale des consommations est : %d\n", sommetot(a));
+    ecrireStationDansFichier(a, nom); // Écrire les données dans un fichier
+
+    libererStation(a); // Libérer la mémoire de l'arbre
+    free(h);           // Libérer la mémoire pour `h`
+    free(nom);         // Libérer la mémoire pour `nom`
+
+    return 0;
 }
-
