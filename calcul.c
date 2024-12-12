@@ -199,9 +199,7 @@ void ajoutConso(Station *a, int id, long conso) {
 
 
 Station* recupDonnee(Station *a, int *h, char *nom) {
-    char filepath[100];
-    snprintf(filepath, sizeof(filepath), "%s.txt", nom); // Construction du chemin du fichier
-    FILE *fichier = fopen(filepath, "r+"); 
+    FILE *fichier = fopen(nom, "r+"); 
     if (fichier == NULL) {
         printf("Ouverture du fichier impossible\n");
         printf("Code d'erreur = %d\n", errno);
@@ -249,16 +247,16 @@ void ecrireStationRecursif(FILE* fichier, Station* a) {
 }
 
 
-void ecrireStationDansFichier(Station* a,char*n) {
+FILE* ecrireStationDansFichier(Station* a,char*n) {
     if (a == NULL) {
         fprintf(stderr, "Erreur : La station est NULL.\n");
-        return;
+        return NULL;
     }
     char*nom=malloc(sizeof(char)*50);
     if(nom==NULL){
     	exit(1);
     }
-    sprintf(nom,"%s_calc.txt",n);
+    sprintf(nom,"calc_%s",n);
     FILE* fichier = fopen(nom, "w");
     if (fichier == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
@@ -270,6 +268,8 @@ void ecrireStationDansFichier(Station* a,char*n) {
     
     fclose(fichier);
     printf("Les données de la station et de ses sous-arbres ont été écrites dans le fichier '%s'.\n", nom);
+    return fichier;
+
 }
 
 
@@ -282,37 +282,36 @@ void afficheStationPrefixe(Station*a){
   }
 }
 
-int main() {
-    Station *a = NULL; // Initialisation de l'arbre à NULL
-    int *h = malloc(sizeof(int));
-    if (h == NULL) {
-        fprintf(stderr, "Erreur : Allocation mémoire échouée\n");
-        exit(1);
+int main(int argc, char**argv) {
+    if(argc!=2){
+    	printf("mauvais nombre d argument");
     }
-    *h = 1;
+    else{
+    	Station *a = NULL; // Initialisation de l'arbre à NULL
+    	int *h = malloc(sizeof(int));
+    	if (h == NULL) {
+        	fprintf(stderr, "Erreur : Allocation mémoire échouée\n");
+        	exit(1);
+    	}
+    	*h = 1;
+    	if (argv[1]== NULL) {
+        	fprintf(stderr, "Erreur : Allocation mémoire échouée\n");
+        	exit(1);
+    	}
+ 	FILE*f=NULL;
+    	a = recupDonnee(a, h, argv[1]); // Charger les données
+    	if (a == NULL) {
+        	fprintf(stderr, "Erreur : Aucun arbre n'a été créé, vérifiez vos données d'entrée.\n");
+        	free(h);
+        
+        	return 1; // Sortir avec un code d'erreur
+    	}
 
-    char *nom = malloc(sizeof(char) * 50);
-    if (nom == NULL) {
-        fprintf(stderr, "Erreur : Allocation mémoire échouée\n");
-        exit(1);
+    	printf("La somme totale des consommations est : %d\n", sommetot(a));
+    	f=ecrireStationDansFichier(a, argv[1]); // Écrire les données dans un fichier
+
+    	libererStation(a); // Libérer la mémoire de l'arbre
+    	free(h);           // Libérer la mémoire pour `h`
     }
-    printf("Entrer le nom de la station : ");
-    scanf("%25s", nom);
-
-    a = recupDonnee(a, h, nom); // Charger les données
-    if (a == NULL) {
-        fprintf(stderr, "Erreur : Aucun arbre n'a été créé, vérifiez vos données d'entrée.\n");
-        free(h);
-        free(nom);
-        return 1; // Sortir avec un code d'erreur
-    }
-
-    printf("La somme totale des consommations est : %d\n", sommetot(a));
-    ecrireStationDansFichier(a, nom); // Écrire les données dans un fichier
-
-    libererStation(a); // Libérer la mémoire de l'arbre
-    free(h);           // Libérer la mémoire pour `h`
-    free(nom);         // Libérer la mémoire pour `nom`
-
-    return 0;
+    	return 0;
 }
