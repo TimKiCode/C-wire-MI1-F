@@ -277,4 +277,11 @@ int main(){
   scanf("%25s",nom);
   
   a=recupDonnee(h,nom);
+  printf("la somme totale des consommations est : %d\n",sommetot(a));
+  ecrireStationDansFichier(a,nom);
+  
+  free(h);
+  free(a);
+  return 0;
+}
 }
