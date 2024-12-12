@@ -7,45 +7,39 @@ exec="exec.c"
 combined="$2-$3"
 fichier="$1"
 
-touch tmp.csv
+touch tmp.txt
 
 function hvbcomp {
 	echo "tout roule"
-	tail -n +2 "$fichier"  | cut -d ';' -f 2-> t.csv
-	awk -F';' '{ if($1 !~ /-/ && $2 ~ /-/ ) print $1, $(NF-1), $NF }' t.csv > tmp.csv
+	tail -n +2 "$fichier"  | cut -d ';' -f 2- | awk -F';' '{ if($1 !~ /-/ && $2 ~ /-/ ) print $1, $(NF-1), $NF }' > tmp.txt
 
 }
 
 function hvacomp {
 	echo "tout roule"
-	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' '{ if($2 !~ /-/ && $3 ~ /-/) print $2, $(NF-1), $NF }' t.csv > tmp.csv
+	tail -n +2 "$fichier" | cut -d ';' -f 2- | awk -F';' '{ if($2 !~ /-/ && $3 ~ /-/) print $2, $(NF-1), $NF }' > tmp.txt
 }
 
 
 function lvall {
 	echo "tout roule"
-	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' '{ if($3 !~ /-/) print $3, $(NF-1), $NF }' t.csv > tmp.csv
+	tail -n +2 "$fichier" | cut -d ';' -f 2- | awk -F';' '{ if($3 !~ /-/) print $3, $(NF-1), $NF }' > tmp.txt
 }
 	
 function lvcomp {
 	echo "tout roule"
-	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' '{ if($3 !~ /-/ && $4 !~ /-/ ) print $3, $(NF-1), $NF }' t.csv > tmp.csv
+	tail -n +2 "$fichier" | cut -d ';' -f 2- | awk -F';' '{ if($3 !~ /-/ && $4 !~ /-/ ) print $3, $(NF-1), $NF }' > tmp.txt
 }
 
 function lvindiv {
 	echo "tout roule"
-	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' '{ if($3 !~ /-/ && $4 ~ /-/) print $3, $(NF-1), $NF }' t.csv
+	tail -n +2 "$fichier" | cut -d ';' -f 2- | awk -F';' '{ if($3 !~ /-/ && $4 ~ /-/) print $3, $(NF-1), $NF }' > tmp.txt
 }
 
 
 function lvallminmax {
 	echo "tout roule"
-	tail -n +2 "$fichier" | cut -d ';' -f 2-> t.csv
-	awk -F';' '{ if($3 !~ /-/) print $3, $(NF-1), $NF }' t.csv > tmp.csv
+	tail -n +2 "$fichier" | cut -d ';' -f 2- | awk -F';' '{ if($3 !~ /-/) print $3, $(NF-1), $NF }' > tmp.txt
 }
 
 # Vérification
