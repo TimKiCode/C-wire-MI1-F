@@ -235,7 +235,7 @@ void ecrireStationRecursif(FILE* fichier, Station* a) {
 }
 
 
-FILE* ecrireStationDansFichier(Station* a,char*n) {
+void ecrireStationDansFichier(Station* a,char*n) {
     if (a == NULL) {
         fprintf(stderr, "Erreur : La station est NULL.\n");
         return NULL;
@@ -256,7 +256,7 @@ FILE* ecrireStationDansFichier(Station* a,char*n) {
     
     fclose(fichier);
     printf("Les données de la station et de ses sous-arbres ont été écrites dans le fichier '%s'.\n", nom);
-    return fichier;
+  
 }
 
 
@@ -281,8 +281,8 @@ int main(){
   a=recupDonnee(h,nom);
   
   printf("la somme totale des consommations est : %d\n",sommetot(a));
-  FILE*f=NULL;
-  f=ecrireStationDansFichier(a,nom);
+  
+  ecrireStationDansFichier(a,nom);
   
   free(h);
   free(a);
