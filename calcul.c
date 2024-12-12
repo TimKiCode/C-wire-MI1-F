@@ -37,9 +37,9 @@ Station* recherche(Station *st, int id){
     return st;
   }
   else if(id<st->Id){
-    recherche(st->fg,id);
+    return recherche(st->fg,id);
   }
-  recherche(st->fd, id);
+  return recherche(st->fd, id);
 }
 
 int min(int a,int b){
