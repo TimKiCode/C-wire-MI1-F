@@ -189,26 +189,20 @@ void ajoutConso(Station*a,int id,int conso){
 }
 
 
-Station* recupDonnee(int *h,char*nom){
-  if(nom==NULL){
-    
-    exit(1);
-  }
-  sprintf(nom,"%s.txt",nom);
+Station* recupDonnee(int *h,char*n){
+  char*nom=malloc(sizeof(char)*50);
+  sprintf(nom,"%s.txt",n);
   FILE*fichier=fopen(nom,"r+");
   if(fichier==NULL){
     printf("Ouverture du fichier impossible\n");
     printf("code d'erreur = %d \n", errno );
     exit(1);
   }
+  ;
   Station*a=malloc(sizeof(Station));
-  if(a==NULL){
-    exit(1);
-  }
-
   int id, capacite,conso;
   while(fscanf(fichier,"%d %d %d",&id, &capacite,&conso)==3){
-    if(recherche(a,id)==NULL && id!=0 && capacite!=0 && conso!=0){
+    if(recherche(a,id)==NULL){
       a=insertionStation(a, id, capacite,conso, h);
       a=equilibrerStation(a);
     }
@@ -241,10 +235,10 @@ void ecrireStationRecursif(FILE* fichier, Station* a) {
 }
 
 
-void ecrireStationDansFichier(Station* a,char*n) {
+FILE* ecrireStationDansFichier(Station* a,char*n) {
     if (a == NULL) {
         fprintf(stderr, "Erreur : La station est NULL.\n");
-        return;
+        return NULL;
     }
     char*nom=malloc(sizeof(char)*50);
     if(nom==NULL){
@@ -262,6 +256,7 @@ void ecrireStationDansFichier(Station* a,char*n) {
     
     fclose(fichier);
     printf("Les données de la station et de ses sous-arbres ont été écrites dans le fichier '%s'.\n", nom);
+    return fichier;
 }
 
 
@@ -284,8 +279,10 @@ int main(){
   scanf("%25s",nom);
   
   a=recupDonnee(h,nom);
+  
   printf("la somme totale des consommations est : %d\n",sommetot(a));
-  ecrireStationDansFichier(a,nom);
+  FILE*f=NULL;
+  f=ecrireStationDansFichier(a,nom);
   
   free(h);
   free(a);
