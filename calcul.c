@@ -190,6 +190,10 @@ void ajoutConso(Station*a,int id,int conso){
 
 
 Station* recupDonnee(int *h,char*nom){
+  if(nom==NULL){
+    
+    exit(1);
+  }
   sprintf(nom,"%s.txt",nom);
   FILE*fichier=fopen(nom,"r+");
   if(fichier==NULL){
@@ -197,8 +201,11 @@ Station* recupDonnee(int *h,char*nom){
     printf("code d'erreur = %d \n", errno );
     exit(1);
   }
-  ;
   Station*a=malloc(sizeof(Station));
+  if(a==NULL){
+    exit(1);
+  }
+
   int id, capacite,conso;
   while(fscanf(fichier,"%d %d %d",&id, &capacite,&conso)==3){
     if(recherche(a,id)==NULL && id!=0 && capacite!=0 && conso!=0){
