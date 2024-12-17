@@ -24,7 +24,7 @@ int main(int argc, char**argv) {
     	}
         //char *b;
 	//b="tmp.txt";
-    	printf("La somme totale des consommations est : %d\n", sommetot(a));
+    	//printf("La somme totale des consommations est : %d\n", sommetot(a));
     	f=ecrireStationDansFichier(a, argv[2]); // Écrire les données dans un fichier
 
     	libererStation(a); // Libérer la mémoire de l'arbre

@@ -73,6 +73,8 @@ else
     
 fi
 
+start_time=$(date +%s%3N)
+
 case "$combined" in
 "hvb-comp") hvbcomp;;
 "hva-comp") hvacomp;;
@@ -80,7 +82,8 @@ case "$combined" in
 "lv-comp") lvcomp;;
 "lv-indiv") lvindiv;;
 "lv-allminmax") lvallminmax;;
-*) echo "rtfm";;
+*) echo "rtfm"
+exit;;
 esac
 
 chmod 644 "$tmp_file"
@@ -99,5 +102,9 @@ chmod +x ./CodeC/exec
 
 ./CodeC/exec "$tmp_file" "$combined"
 
+end_time=$(date +%s%3N)
+execution_time=$((end_time - start_time))
+seconds=$((execution_time / 1000))
+milliseconds=$((execution_time % 1000))
 
-
+echo "Temps de traitement : ${seconds}s ${milliseconds}ms"

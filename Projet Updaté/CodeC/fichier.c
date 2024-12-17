@@ -16,7 +16,7 @@ Station* recupDonnee(Station *a, int *h, char *nom) {
 
     // Lecture ligne par ligne du fichier
     while (fscanf(fichier, "%d %ld %ld", &id, &capacite, &conso) == 3) {
-        printf("Ligne lue : id=%d, capacite=%ld, conso=%ld\n", id, capacite, conso); // Debug
+        //printf("Ligne lue : id=%d, capacite=%ld, conso=%ld\n", id, capacite, conso); // Debug
         if (id != 0 && capacite != 0) {
                 a = insertionStation(a, id, capacite, conso, h);
                 }
@@ -40,11 +40,12 @@ void ecrireStationRecursif(FILE* fichier, Station* a) {
     if (a == NULL) {
         return;
     }
-    fprintf(fichier, "%d %ld %ld %ld\n", a->Id,a->capacite,a->consommation,a->diff);
     
-    if (a->fg != NULL) {
+     if (a->fg != NULL) {
         ecrireStationRecursif(fichier, a->fg);
     }
+
+    fprintf(fichier, "%d %ld %ld %ld\n", a->Id,a->capacite,a->consommation,a->diff);
     
     if (a->fd != NULL) {
         ecrireStationRecursif(fichier, a->fd);

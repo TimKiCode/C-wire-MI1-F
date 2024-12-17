@@ -169,7 +169,7 @@ int sommetot(Station *a) { // Calcule la somme des consommations totales
         return 0;
     }
     // Debug pour vérifier la consommation de chaque station
-    printf("Station %d, consommation %ld\n", a->Id, a->consommation);
+    //printf("Station %d, consommation %ld\n", a->Id, a->consommation);
     return a->consommation + sommetot(a->fg) + sommetot(a->fd);
 }
 
