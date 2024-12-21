@@ -5,6 +5,7 @@ Ce projet combine un script Shell pour le filtrage des données et un programme 
 Les données sont extraites d'un fichier CSV contenant des informations sur la production et la consommation d'énergie à différents niveaux (centrales électriques, stations HV-B, HV-A, postes LV, entreprises, particuliers).
 L'objectif est d'analyser ces stations afin de détecter des situations de surproduction ou sous-production et de produire des rapports structurés.
 
+
 Pré-requis : 
 
 -Avoir gnuplot 
@@ -12,6 +13,7 @@ Pré-requis :
 -Avoir un compilateur (GNU Compiler Collection)
 
 -Avoir un terminal linux (Debian, Ubuntu)
+
 
 Utilisation : 
 
