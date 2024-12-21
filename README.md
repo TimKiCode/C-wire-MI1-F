@@ -18,10 +18,10 @@ Pré-requis :
 Utilisation : 
 
 Mettez le fichier à traiter dans le dossier Input/ du projet.
-Puis exécuter le fichier shell nommé c-wire.sh ensuite vous devez passer en 1er argument le chemin de votre fichier
+Puis exécuter le fichier shell nommé c-wire.sh ensuite vous devez passer en 1er argument le chemin de votre fichier.
 Par exemple Input/c-wire_v00.dat puis en 2eme et 3eme arguments l'une des possibilités suivantes : hvb comp, hva comp, lv all, lv comp, lv indiv.
 Enfin vous pouvez rajouter un 4eme argument pour filtrer en fonction d'une centrale précise.
-Par exemple : /c-wire.sh Input/c-wire_v25.dat lv all 1
+Par exemple : /c-wire.sh Input/c-wire_v25.dat lv all 1.
 Vous trouverez donc dans le dossier Output/ votre fichier de sortie qui correspond aux options sélectionnées.
 Dans le dossier graphs vous trouverez les graphiques qui correspondent aux traitements lv all ou lv all avec numéro de centrale.
 En entrant dans la commande l'option "-h" vous receverez une aide dans le terminal.
