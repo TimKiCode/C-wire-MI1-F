@@ -7,6 +7,8 @@ L'objectif est d'analyser ces stations afin de détecter des situations de surpr
 
 Pré-requis : 
 -Avoir gnuplot 
+-Avoir un compilateur (GNU Compiler Collection)
+-Avoir un terminal linux (Debian, Ubuntu)
 
 Utilisation : 
 Mettez le fichier à traiter dans le dossier Input/ du projet.
